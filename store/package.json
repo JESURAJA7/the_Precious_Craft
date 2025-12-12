@@ -70,6 +70,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.15.1",
     "autoprefixer": "^10.0.1",
     "eslint": "7.30.0",
     "eslint-config-next": "11.0.1",

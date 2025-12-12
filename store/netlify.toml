@@ -1,9 +1,6 @@
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[build]
+  command = "cd store && npm run build"
+  publish = "store/.next"
 
-# Optional: For trailing slashes
-[[redirects]]
-  from = "/:path*/"
-  to = "/:path*/index.html"
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
