@@ -1,0 +1,9 @@
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Optional: For trailing slashes
+[[redirects]]
+  from = "/:path*/"
+  to = "/:path*/index.html"
