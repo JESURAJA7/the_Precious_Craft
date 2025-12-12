@@ -1,0 +1,35 @@
+{
+  "theme_color": "#f69435",
+  "background_color": "#f69435",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "id": "/",
+  "short_name": "Kachabazar - Store",
+  "name": "Kachabazar - Next Clothing Store e-commerce Template",
+  "description": "Kachabazar - Next Clothing Store e-commerce Template",
+  "icons": [
+    {
+      "src": "/Precious.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/Precious.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "/Precious.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/Precious.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
