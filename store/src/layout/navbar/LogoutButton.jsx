@@ -60,7 +60,7 @@ const LogoutButton = ({ storeCustomization }) => {
       </Link>
       <span className="mx-2">|</span>
       <Link
-        href="http://localhost:3000"
+        href="https://thepreciouscraftadmin.netlify.app"
         target="_blank"
         className="font-medium mr-4 text-sm hidden lg:block text-gray-700 hover:text-purple-600"
       >

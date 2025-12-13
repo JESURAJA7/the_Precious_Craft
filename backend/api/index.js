@@ -90,6 +90,11 @@ app.use("/static", express.static("public"));
 //   res.sendFile(path.join(__dirname, "build", "index.html"));
 // });
 
+//health check
+app.get("/api/health", (req, res) => {
+  res.send("App works properly!");
+});
+
 const PORT = process.env.PORT || 5000;
 
 // const server = http.createServer(app);
