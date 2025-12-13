@@ -3,14 +3,14 @@ import Cookies from "js-cookie";
 
 // ✅ Automatically uses Vite proxy (http://localhost:5055 via vite.config.js)
 const instance = axios.create({
-  baseURL: "/api/v1", // important: only the prefix, not full URL
+  baseURL: import.meta.env.VITE_APP_API_BASE_URL, // important: only the prefix, not full URL
   timeout: 50000,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
   },
 });
-
+//console.log("API BASE URL", import.meta.env.VITE_APP_API_BASE_URL);
 // ✅ Request Interceptor
 instance.interceptors.request.use(
   (config) => {
