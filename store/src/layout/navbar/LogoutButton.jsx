@@ -62,7 +62,7 @@ const LogoutButton = ({ storeCustomization }) => {
       <Link
         href="https://thepreciouscraftadmin.netlify.app"
         target="_blank"
-        className="font-medium mr-4 text-sm hidden lg:block text-gray-700 hover:text-purple-600"
+        className="font-medium mr-4 text-sm text-gray-700 hover:text-purple-600"
       >
         Admin Login
       </Link>
