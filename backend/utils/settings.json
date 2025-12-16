@@ -10,7 +10,7 @@
       "contact": "019579034",
       "email": "kachabazar@gmail.com",
       "website": "kachabazar-admin.vercel.app",
-      "default_currency": "€",
+      "default_currency": "₹",
       "default_time_zone": "Europe/London",
       "default_date_format": "MMM D, YYYY",
       "receipt_size": "57-mm"
@@ -92,7 +92,10 @@
         "popular_products_status": true,
         "discount_product_status": true,
         "feature_promo_status": true,
-        "discount_coupon_code": ["WINTER21", "OCTOBER21"],
+        "discount_coupon_code": [
+          "WINTER21",
+          "OCTOBER21"
+        ],
         "place_holder_img": "",
         "discount_title": {
           "en": "Latest Super Discount Active Coupon Code",
@@ -356,7 +359,12 @@
           "en": "Mega Offer",
           "de": "Mega Angebot"
         },
-        "coupon_code": ["SUMMER21", "WINTER21", "AUGUST21", "OCTOBER21"]
+        "coupon_code": [
+          "SUMMER21",
+          "WINTER21",
+          "AUGUST21",
+          "OCTOBER21"
+        ]
       },
       "privacy_policy": {
         "status": true,
@@ -718,8 +726,8 @@
         "bottom_contact_status": true,
         "social_links_status": true,
         "shipping_card": {
-          "en": "Free Shipping From €500.00",
-          "de": "Kostenloser Versand ab 500,00 €"
+          "en": "Free Shipping From ₹500.00",
+          "de": "Kostenloser Versand ab 500,00 ₹"
         },
         "support_card": {
           "en": "Support 24/7  At Anytime",
@@ -869,7 +877,6 @@
       "fb_pixel_status": false,
       "google_analytic_key": "",
       "google_analytic_status": false,
-
       "google_login_status": false,
       "github_login_status": false,
       "facebook_login_status": false,

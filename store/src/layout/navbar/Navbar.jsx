@@ -49,6 +49,9 @@ const Navbar = async ({ globalSetting, storeCustomization }) => {
             </div>
 
             {/* notification icons */}
+            <div className="hidden md:flex xl:col-span-2">
+              <NotifyIcon />
+            </div>
 
           </div>
         </div>

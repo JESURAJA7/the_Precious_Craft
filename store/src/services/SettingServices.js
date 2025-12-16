@@ -3,8 +3,8 @@ import { baseURL, handleResponse } from "@services/CommonService";
 const getStoreCustomizationSetting = async () => {
   try {
     const response = await fetch(`${baseURL}/setting/store/customization`, {
-      // cache: "force-cache", //if you want to no cache then comment this line, this setup will only re-call the api on hard reload after first call
-      next: { revalidate: 900 }, // revalidate every 15 minutes
+      cache: "no-store",
+      // next: { revalidate: 0 }, 
     });
 
     const storeCustomizationSetting = await handleResponse(response);
@@ -19,8 +19,8 @@ const getStoreCustomizationSetting = async () => {
 const getGlobalSetting = async () => {
   try {
     const response = await fetch(`${baseURL}/setting/global`, {
-      // cache: "force-cache", //if you want to no cache then comment this line, this setup will only re-call the api on hard reload after first call
-      next: { revalidate: 300 }, // revalidate every 5 minutes
+      cache: "no-store",
+      // next: { revalidate: 0 }, 
     });
 
     const globalSetting = await handleResponse(response);

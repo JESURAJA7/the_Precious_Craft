@@ -48,7 +48,7 @@ const CarouselCard = ({ storeCustomizationSetting, sliderData }) => {
               alt={item.title}
               className="object-cover w-full h-[240px] md:h-[550px]"
               priority
-              quality={100}
+              unoptimized
             />
           </div>
           {(item.title || item.info || item.buttonName) && (

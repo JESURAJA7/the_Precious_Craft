@@ -19,8 +19,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTranslation } from "react-i18next";
-import { FiPlus } from "react-icons/fi";
+import { FiPlus, FiGrid, FiList } from "react-icons/fi";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { useState } from "react";
 
 //internal import
 
@@ -33,6 +34,7 @@ import ProductServices from "@/services/ProductServices";
 import PageTitle from "@/components/Typography/PageTitle";
 import { SidebarContext } from "@/context/SidebarContext";
 import ProductTable from "@/components/product/ProductTable";
+import ProductCard from "@/components/product/ProductCard";
 import MainDrawer from "@/components/drawer/MainDrawer";
 import ProductDrawer from "@/components/drawer/ProductDrawer";
 import CheckBox from "@/components/form/others/CheckBox";
@@ -44,6 +46,7 @@ import SelectCategory from "@/components/form/selectOption/SelectCategory";
 import AnimatedContent from "@/components/common/AnimatedContent";
 
 const Products = () => {
+  const [viewMode, setViewMode] = useState("card"); // 'table' or 'card'
   const { title, handleDeleteMany, handleUpdateMany } = useToggleDrawer();
   const {
     open,
@@ -267,45 +270,70 @@ const Products = () => {
               </div>
             </form>
 
+            <div className="flex justify-end mb-4 px-4">
+              <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+                <button
+                  onClick={() => setViewMode('card')}
+                  className={`p-2 rounded-md transition-all ${viewMode === 'card' ? 'bg-white dark:bg-gray-600 shadow text-emerald-600' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                  title="Grid View"
+                >
+                  <FiGrid size={20} />
+                </button>
+                <button
+                  onClick={() => setViewMode('table')}
+                  className={`p-2 rounded-md transition-all ${viewMode === 'table' ? 'bg-white dark:bg-gray-600 shadow text-emerald-600' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                  title="Table View"
+                >
+                  <FiList size={20} />
+                </button>
+              </div>
+            </div>
+
             {loading ? (
               <TableLoading row={12} col={7} width={160} height={20} />
             ) : error ? (
               <span className="text-center mx-auto text-red-500">{error}</span>
             ) : serviceData?.length !== 0 ? (
               <div>
-                <TableContainer className="mb-4 rounded-b-lg">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>
-                          <CheckBox
-                            type="checkbox"
-                            name="selectAll"
-                            id="selectAll"
-                            isChecked={isCheckAll}
-                            handleSelect={() => handleSelectAll(data?.products)}
-                          />
-                        </TableHead>
-                        <TableHead>{t("ProductNameTbl")}</TableHead>
-                        <TableHead>{t("CategoryTbl")}</TableHead>
-                        <TableHead>{t("PriceTbl")}</TableHead>
-                        <TableHead>Sale Price</TableHead>
-                        <TableHead>{t("StockTbl")}</TableHead>
-                        <TableHead>{t("StatusTbl")}</TableHead>
-                        <TableHead className="text-center">
-                          {t("DetailsTbl")}
-                        </TableHead>
-                        <TableHead className="text-center">
-                          {t("PublishedTbl")}
-                        </TableHead>
-                        <TableHead className="text-right">
-                          {t("ActionsTbl")}
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <ProductTable products={data?.products} />
-                  </Table>
-                </TableContainer>
+                {viewMode === 'table' && (
+                  <TableContainer className="mb-4 rounded-b-lg">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>
+                            <CheckBox
+                              type="checkbox"
+                              name="selectAll"
+                              id="selectAll"
+                              isChecked={isCheckAll}
+                              handleSelect={() => handleSelectAll(data?.products)}
+                            />
+                          </TableHead>
+                          <TableHead>{t("ProductNameTbl")}</TableHead>
+                          <TableHead>{t("CategoryTbl")}</TableHead>
+                          <TableHead>{t("PriceTbl")}</TableHead>
+                          <TableHead>Sale Price</TableHead>
+                          <TableHead>{t("StockTbl")}</TableHead>
+                          <TableHead>{t("StatusTbl")}</TableHead>
+                          <TableHead className="text-center">
+                            {t("DetailsTbl")}
+                          </TableHead>
+                          <TableHead className="text-center">
+                            {t("PublishedTbl")}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t("ActionsTbl")}
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <ProductTable products={data?.products} />
+                    </Table>
+                  </TableContainer>
+                )}
+
+                {viewMode === 'card' && (
+                  <ProductCard products={data?.products} />
+                )}
                 <div>
                   <Pagination
                     resultsperpage={limitData}
@@ -320,7 +348,7 @@ const Products = () => {
             )}
           </CardContent>
         </Card>
-      </AnimatedContent>
+      </AnimatedContent >
     </>
   );
 };

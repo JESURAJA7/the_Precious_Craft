@@ -31,10 +31,7 @@ const sidebar = [
         path: "/products",
         name: "Products",
       },
-      {
-        path: "/pricing-engine",
-        name: "Set Pricing",
-      },
+
       {
         path: "/categories",
         name: "Categories",

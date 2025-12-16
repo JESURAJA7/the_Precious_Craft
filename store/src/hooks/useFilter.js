@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 const useFilter = (data) => {
@@ -7,13 +7,14 @@ const useFilter = (data) => {
   const [delivered, setDelivered] = useState([]);
   const [sortedField, setSortedField] = useState("");
   const router = useRouter();
+  const pathname = usePathname();
 
   // console.log("sortedfield", sortedField, data);
 
   const productData = useMemo(() => {
     let services = data;
     //filter user order
-    if (router.pathname === "/user/dashboard") {
+    if (pathname === "/user/dashboard") {
       const orderPending = services?.filter(
         (statusP) => statusP.status === "Pending"
       );

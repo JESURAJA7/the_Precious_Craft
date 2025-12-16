@@ -25,6 +25,7 @@ const FeatureCategory = async () => {
                         alt="category"
                         width={35}
                         height={35}
+                        style={{ width: "35px", height: "35px" }}
                       />
                     ) : (
                       <Image
@@ -32,6 +33,7 @@ const FeatureCategory = async () => {
                         alt="category"
                         width={35}
                         height={35}
+                        style={{ width: "35px", height: "35px" }}
                       />
                     )}
                   </div>
@@ -42,7 +44,7 @@ const FeatureCategory = async () => {
                       name: category.name,
                       description: category.description,
                     }}
-                    // showingTranslateValue={showingTranslateValue}
+                  // showingTranslateValue={showingTranslateValue}
                   />
                 </div>
               </div>

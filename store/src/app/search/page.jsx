@@ -32,10 +32,25 @@ export async function generateMetadata({ searchParams }) {
 const Search = async ({ searchParams }) => {
   //   const searchParams = useSearchParams();
 
-  const { _id, query } = await searchParams;
+  const { _id, query, category } = await searchParams;
+
+  let categoryId = _id;
+
+  // Fallback: If _id is missing but category slug is present, try to find ID
+  if (!categoryId && category) {
+    const { categories } = await getShowingCategory();
+    const foundCategory = categories?.find(
+      (c) =>
+        c.name?.en?.toLowerCase().includes(category.toLowerCase()) ||
+        c.slug?.toLowerCase().includes(category.toLowerCase())
+    );
+    if (foundCategory) {
+      categoryId = foundCategory._id;
+    }
+  }
 
   const { products, error } = await getShowingStoreProducts({
-    category: _id ? _id : "",
+    category: categoryId ? categoryId : "",
     title: query ? encodeURIComponent(query) : "",
   });
   const { attributes } = await getShowingAttributes();

@@ -143,9 +143,9 @@
 //       </div>
 //     </div>
 //           </div>
-    
-         
-          
+
+
+
 
 //           <div className="flex">
 //             <div className="w-full">
@@ -272,6 +272,7 @@ import {
   getStoreCustomizationSetting,
 } from "@services/SettingServices";
 import DiscountedCard from "@components/product/DiscountedCard";
+import { getShowingCategory } from "@services/CategoryService";
 import AnimatedCategorySlider from "@components/carousel/AnimatedCategorySlider";
 
 // ✅ HERO SECTION (video)
@@ -294,7 +295,7 @@ function Hero() {
           Your browser does not support the video tag.
         </video>
         {/* Overlay to darken */}
-        <div  className="absolute inset-0 bg-black/30"></div>
+        <div className="absolute inset-0 bg-black/30"></div>
       </div>
 
       {/* Content */}
@@ -313,25 +314,57 @@ function Hero() {
           </div>
         </div>
       </div>
-       <div id="animated-slider"></div>
+      <div id="animated-slider"></div>
     </div>
   );
 }
-
 
 // ✅ MAIN HOME PAGE
 const Home = async () => {
   const { attributes } = await getShowingAttributes();
   const { storeCustomizationSetting, error: storeCustomizationError } =
     await getStoreCustomizationSetting();
+
+  // ✅ Fetch active categories to get correct IDs
+  const { categories } = await getShowingCategory();
+
+  // Helper to find category by name (flexible matching)
+  const findCategory = (term) =>
+    categories?.find(c =>
+      c.name?.en?.toLowerCase().includes(term) ||
+      c.slug?.toLowerCase().includes(term)
+    );
+
+  const womenCategory = findCategory("women");
+  const menCategory = findCategory("men");
+  const kidsCategory = findCategory("kids");
+
+  // Fetch products using resolved IDs
+  let { products: womenProducts } = await getShowingStoreProducts({
+    category: womenCategory?._id || "",
+  });
+  let { products: menProducts } = await getShowingStoreProducts({
+    category: menCategory?._id || "",
+  });
+  let { products: kidsProducts } = await getShowingStoreProducts({
+    category: kidsCategory?._id || "",
+  });
+
   const { popularProducts, discountedProducts, error } =
     await getShowingStoreProducts({
       category: "",
       title: "",
     });
 
+  // Fallback: If categories have no products (data issue), fill with popular products to prevent empty sections
+  if (womenProducts?.length === 0) womenProducts = popularProducts?.slice(0, 10);
+  if (menProducts?.length === 0) menProducts = popularProducts?.slice(5, 15); // Offset to show variety
+  if (kidsProducts?.length === 0) kidsProducts = popularProducts?.slice(2, 12);
+
   const { globalSetting } = await getGlobalSetting();
   const currency = globalSetting?.default_currency || "$";
+
+
 
   return (
 
@@ -341,52 +374,15 @@ const Home = async () => {
 
       {/* ✅ ✅ HERO video on top */}
       <Hero />
-      
 
       {/* ✅ Animated Category Slider */}
       <AnimatedCategorySlider />
-     
 
-      {/* Floating Right-Side Category Bar */}
-<div className="fixed top-2/4 right-4 z-50 flex flex-col space-y-2">
-  {/* Gold */}
-  <Link href="/search?category=gold-jewellery&_id=6901ca8e841765d2d7985f4d">
-    <div className="bg-yellow-400 text-white font-semibold px-4 py-2 rounded-lg shadow-lg cursor-pointer hover:bg-yellow-500 transition">
-      Gold
-    </div>
-  </Link>
-
-  {/* Silver */}
-  <Link href="/search?category=silver-jewellery&_id=6901ca14841765d2d7985f08">
-    <div className="bg-gray-500 text-white font-semibold px-4 py-2 rounded-lg shadow-lg cursor-pointer hover:bg-gray-600 transition">
-      Silver
-    </div>
-  </Link>
-
-  {/* Brass */}
-  <Link href="/search?category=brass-jewellery&_id=6901a6164976d20d78f6c17f">
-    <div className="bg-yellow-800 text-white font-semibold px-4 py-2 rounded-lg shadow-lg cursor-pointer hover:bg-yellow-900 transition">
-      Brass
-    </div>
-  </Link>
-  
-  <a
-    href="#animated-slider"
-    className="bg-purple-600 text-white px-6 py-2 rounded-lg shadow-lg hover:bg-purple-700 transition-colors font-medium">
-    Explore Our Collections
-  </a>
-
-  {/* You can add more categories here */}
-</div>
-
-      
-
-      {/* ✅ Original home content below */}
-      <div className="bg-white dark:bg-zinc-900 ">
-        <div className="mx-auto py-5 max-w-screen-xxl px-0 sm:px-1">
+      {/* ✅ Main Carousel (Admin Set Banner) */}
+      <div className="bg-white dark:bg-zinc-900">
+        <div className="mx-auto py-5 max-w-screen-2xl px-3 sm:px-10">
           <div className="flex w-full">
-            {/* Home page main carousel */}
-            <div className="w-full lg:w-2/3 xl:w-4/4 flex-shrink-0">
+            <div className="w-full flex-shrink-0">
               <Suspense fallback={<p>Loading carousel...</p>}>
                 <MainCarousel />
               </Suspense>
@@ -395,8 +391,44 @@ const Home = async () => {
         </div>
       </div>
 
+      {/* Floating Right-Side Category Bar (Updated) */}
+      <div className="fixed top-2/4 right-4 z-50 flex flex-col space-y-2">
+        {/* Womens */}
+        {womenCategory && (
+          <Link href={`/search?category=${womenCategory.name.en?.toLowerCase() || 'women'}&_id=${womenCategory._id}`}>
+            <div className="bg-purple-600 text-white font-semibold px-4 py-2 rounded-lg shadow-lg cursor-pointer hover:bg-purple-700 transition">
+              Womens
+            </div>
+          </Link>
+        )}
+
+        {/* Mens */}
+        {menCategory && (
+          <Link href={`/search?category=${menCategory.name.en?.toLowerCase() || 'men'}&_id=${menCategory._id}`}>
+            <div className="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-lg cursor-pointer hover:bg-blue-700 transition">
+              Mens
+            </div>
+          </Link>
+        )}
+
+        {/* Kids */}
+        {kidsCategory && (
+          <Link href={`/search?category=${kidsCategory.name.en?.toLowerCase() || 'kids'}&_id=${kidsCategory._id}`}>
+            <div className="bg-green-600 text-white font-semibold px-4 py-2 rounded-lg shadow-lg cursor-pointer hover:bg-green-700 transition">
+              Kids
+            </div>
+          </Link>
+        )}
+
+        <a
+          href="#discount"
+          className="bg-gray-800 text-white px-6 py-2 rounded-lg shadow-lg hover:bg-gray-900 transition-colors font-medium">
+          Offers
+        </a>
+      </div>
+
       {/* ✅ Featured Category Section */}
-      {storeCustomizationSetting?.home?.featured_status && (
+      {/* {storeCustomizationSetting?.home?.featured_status && (
         <div className="bg-gray-100 dark:bg-zinc-800 lg:py-16 py-10">
           <div className="mx-auto max-w-screen-2xl px-3 sm:px-10">
             <div className="mb-10 flex justify-center">
@@ -429,99 +461,191 @@ const Home = async () => {
             </Suspense>
           </div>
         </div>
-      )}
+      )} */}
 
-      {/* ✅ Categories Section */}
+      {/* ✅ Categories Section (Updated) */}
       <div>
-        <h1 className="text-2xl py-4 md:text-3xl font-bold text-center mb-6 text-gray-900">
-          Categories
+        <h1 className="text-2xl py-4 md:text-3xl font-bold text-center mb-6 text-gray-900 dark:text-gray-100">
+          Collections
         </h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 justify-items-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 justify-items-center max-w-screen-2xl mx-auto px-4">
 
-          {/* Category 1 */}
-          <Link href="/search?category=gold-jewellery&_id=6901ca8e841765d2d7985f4d">
-            <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 aspect-square w-full max-w-xs cursor-pointer">
-              <img
-                src="/Necklace Set.png"
-                alt="Category 1"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <span className="absolute top-2 left-2 bg-yellow-400 text-white font-semibold px-3 py-1 rounded-full text-sm shadow-md">
-                Gold
-              </span>
-            </div>
-          </Link>
+          {/* Womens */}
+          {womenCategory && (
+            <Link href={`/search?category=${womenCategory.name.en?.toLowerCase() || 'women'}&_id=${womenCategory._id}`} className="w-full max-w-xs">
+              <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 aspect-[3/4] cursor-pointer">
+                <img
+                  src="/Necklace Set.png"
+                  alt="Womens Collection"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <span className="absolute bottom-6 left-6 text-white text-2xl font-serif font-bold tracking-wide">
+                  Womens
+                </span>
+              </div>
+            </Link>
+          )}
 
-          {/* Category 2 */}
-          <Link href="/search?category=silver-jewellery&_id=6901ca14841765d2d7985f08">
-            <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 aspect-square w-full max-w-xs cursor-pointer">
-              <img
-                src="/silver.png"
-                alt="Category 2"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <span className="absolute top-2 left-2 bg-gray-400 text-white font-semibold px-3 py-1 rounded-full text-sm shadow-md">
-                Silver
-              </span>
-            </div>
-          </Link>
+          {/* Mens */}
+          {menCategory && (
+            <Link href={`/search?category=${menCategory.name.en?.toLowerCase() || 'men'}&_id=${menCategory._id}`} className="w-full max-w-xs">
+              <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 aspect-[3/4] cursor-pointer">
+                <img
+                  src="/Men’s Collection.png"
+                  alt="Mens Collection"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <span className="absolute bottom-6 left-6 text-white text-2xl font-serif font-bold tracking-wide">
+                  Mens
+                </span>
+              </div>
+            </Link>
+          )}
 
-          {/* Category 3 */}
-          <Link href="/search?category=brass-jewellery&_id=6901a6164976d20d78f6c17f">
-            <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 aspect-square w-full max-w-xs cursor-pointer">
-              <img
-                src="/Bangles.png"
-                alt="Category 3"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <span className="absolute top-2 left-2 bg-yellow-800 text-white font-semibold px-3 py-1 rounded-full text-sm shadow-md">
-                Brass
-              </span>
-            </div>
-          </Link>
-        </div>
-      </div>
-
-      {/* ✅ Popular Products */}
-      <br /><br />
-      <div className="flex py-5">
-        <div className="w-full">
-          {error ? (
-            <CMSkeletonTwo
-              count={20}
-              height={20}
-              error={error}
-              loading={false}
-            />
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-6 gap-2 md:gap-3 lg:gap-3">
-              {popularProducts
-                ?.slice(
-                  0,
-                  storeCustomizationSetting?.home
-                    ?.latest_discount_product_limit
-                )
-                .map((product) => (
-                  <ProductCard
-                    key={product._id}
-                    product={product}
-                    attributes={attributes}
-                    currency={currency}
-                  />
-                ))}
-            </div>
+          {/* Kids */}
+          {kidsCategory && (
+            <Link href={`/search?category=${kidsCategory.name.en?.toLowerCase() || 'kids'}&_id=${kidsCategory._id}`} className="w-full max-w-xs">
+              <div className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 aspect-[3/4] cursor-pointer">
+                <img
+                  src="/Bangles.png"
+                  alt="Kids Collection"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 bg-pink-100"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <span className="absolute bottom-6 left-6 text-white text-2xl font-serif font-bold tracking-wide">
+                  Kids
+                </span>
+              </div>
+            </Link>
           )}
         </div>
       </div>
 
-      
+      {/* ✅ Women's Collection Section */}
+      {womenProducts?.length > 0 && womenCategory && (
+        <div className="bg-white dark:bg-zinc-900 py-10 mx-auto max-w-screen-2xl px-3 sm:px-10">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">
+              Women's Collection
+            </h2>
+            <Link href={`/search?category=${womenCategory.name.en?.toLowerCase() || 'women'}&_id=${womenCategory._id}`}>
+              <span className="text-purple-600 hover:text-purple-800 font-semibold cursor-pointer">
+                View All &rarr;
+              </span>
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-6 gap-2 md:gap-3 lg:gap-3">
+            {womenProducts?.slice(0, 10).map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                attributes={attributes}
+                currency={currency}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Men's Collection Section */}
+      {menProducts?.length > 0 && menCategory && (
+        <div className="bg-gray-50 dark:bg-zinc-800 py-10">
+          <div className="mx-auto max-w-screen-2xl px-3 sm:px-10">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">
+                Men's Collection
+              </h2>
+              <Link href={`/search?category=${menCategory.name.en?.toLowerCase() || 'men'}&_id=${menCategory._id}`}>
+                <span className="text-blue-600 hover:text-blue-800 font-semibold cursor-pointer">
+                  View All &rarr;
+                </span>
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-6 gap-2 md:gap-3 lg:gap-3">
+              {menProducts?.slice(0, 10).map((product) => (
+                <ProductCard
+                  key={product._id}
+                  product={product}
+                  attributes={attributes}
+                  currency={currency}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Kids' Collection Section */}
+      {/* {kidsProducts?.length > 0 && kidsCategory && (
+        <div className="bg-white dark:bg-zinc-900 py-10 mx-auto max-w-screen-2xl px-3 sm:px-10">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">
+              Kids' Collection
+            </h2>
+            <Link href={`/search?category=${kidsCategory.name.en?.toLowerCase() || 'kids'}&_id=${kidsCategory._id}`}>
+              <span className="text-green-600 hover:text-green-800 font-semibold cursor-pointer">
+                View All &rarr;
+              </span>
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-6 gap-2 md:gap-3 lg:gap-3">
+            {kidsProducts?.slice(0, 10).map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                attributes={attributes}
+                currency={currency}
+              />
+            ))}
+          </div>
+        </div>
+      )} */}
+
+      {/* ✅ Popular Products */}
+      <div className="bg-gray-50 dark:bg-zinc-800 py-10">
+        <div className="mx-auto max-w-screen-2xl px-3 sm:px-10">
+          <h2 className="text-xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">Popular Products</h2>
+          <div className="flex py-5">
+            <div className="w-full">
+              {error ? (
+                <CMSkeletonTwo
+                  count={20}
+                  height={20}
+                  error={error}
+                  loading={false}
+                />
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-6 gap-2 md:gap-3 lg:gap-3">
+                  {popularProducts
+                    ?.slice(
+                      0,
+                      storeCustomizationSetting?.home
+                        ?.latest_discount_product_limit
+                    )
+                    .map((product) => (
+                      <ProductCard
+                        key={product._id}
+                        product={product}
+                        attributes={attributes}
+                        currency={currency}
+                      />
+                    ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
 
       {/* ✅ Discounted Products */}
       {storeCustomizationSetting?.home?.discount_product_status &&
         discountedProducts?.length > 0 && (
           <div
             id="discount"
-            className="bg-gray-50 dark:bg-zinc-800 lg:py-16 py-10 mx-auto max-w-screen-2xl px-3 sm:px-10"
+            className="bg-white dark:bg-zinc-900 lg:py-16 py-10 mx-auto max-w-screen-2xl px-3 sm:px-10"
           >
             <div className="mb-10 flex justify-center">
               <div className="text-center w-full lg:w-2/5">

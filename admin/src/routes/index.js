@@ -24,7 +24,7 @@ const Setting = lazy(() => import("@/pages/Setting"));
 const StoreHome = lazy(() => import("@/pages/StoreHome"));
 const StoreSetting = lazy(() => import("@/pages/StoreSetting"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
-const PricingEngine = lazy(() => import("@/pages/PricingEngine"));
+
 const Banner = lazy(() => import("@/pages/Appearance/Banner"));
 /*
 //  * ⚠ These are internal routes!
@@ -42,10 +42,7 @@ const routes = [
     path: "/dashboard",
     component: Dashboard,
   },
-  {
-    path: "/pricing-engine",
-    component: PricingEngine,
-  },
+
   {
     path: "/products",
     component: Products,
@@ -141,7 +138,7 @@ const routeAccessList = [
   // },
   { label: "Dashboard", value: "dashboard" },
   { label: "Products", value: "products" },
-  { label: "Set Pricing", value: "pricing-engine" },
+
   { label: "Categories", value: "categories" },
   { label: "Attributes", value: "attributes" },
   { label: "Coupons", value: "coupons" },

@@ -835,8 +835,7 @@ const useProductSubmit = (id) => {
         hsnCode: data.hsnCode || "",
         weight: Number(data.weight) || 0,
 
-        // Jewellery Pricing Fields
-        metal: data.metalType ? data.metalType.toLowerCase() : "",
+
         metalPurity: data.metalPurity || "",
         netWeight: Number(data.netWeight) || 0,
         metalRate: Number(data.metalRate) || 0,
@@ -993,7 +992,9 @@ const useProductSubmit = (id) => {
       setSelectedCategory([]);
       setDefaultCategory([]);
       if (location.pathname === "/products") {
-        resetRefTwo?.current?.resetSelectedValues();
+        if (resetRefTwo?.current?.resetSelectedValues) {
+          resetRefTwo?.current?.resetSelectedValues();
+        }
       }
 
       clearErrors("sku");

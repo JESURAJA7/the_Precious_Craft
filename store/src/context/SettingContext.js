@@ -15,7 +15,10 @@ export function SettingProvider({
   children,
 }) {
   const [storeSetting, setStoreSetting] = useState(initialStoreSetting);
-  const [globalSetting, setGlobalSetting] = useState(initialGlobalSetting);
+  const [globalSetting, setGlobalSetting] = useState({
+    ...initialGlobalSetting,
+    default_currency: "₹",
+  });
   const [storeCustomization, setStoreCustomization] = useState(
     initialCustomizationSetting
   );

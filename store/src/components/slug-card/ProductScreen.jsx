@@ -24,9 +24,10 @@ import { Button } from "@components/ui/button";
 import ProductReviews from "./ProductReviews";
 import { FiChevronRight, FiHeadphones, FiMinus, FiPlus } from "react-icons/fi";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 const ProductScreen = ({ product, reviews, attributes, relatedProducts }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const { globalSetting, storeCustomization } = useSetting();
   const { showingTranslateValue } = useUtilsFunction();
   const currency = globalSetting?.default_currency || "$";

@@ -533,6 +533,13 @@ import "react-responsive-modal/styles.css";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FiX } from "react-icons/fi";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // internal imports
 import Title from "@/components/form/others/Title";
@@ -551,7 +558,7 @@ import AttributeListTable from "@/components/attribute/AttributeListTable";
 import SwitchToggleForCombination from "@/components/form/switch/SwitchToggleForCombination";
 import useProductSubmit from "@/hooks/useProductSubmit";
 import ActiveButton from "@/components/form/button/ActiveButton";
-import PricingServices from "@/services/PricingServices";
+
 import { notifyError, notifySuccess } from "@/utils/toast";
 
 const ProductDrawer = ({ id }) => {
@@ -607,131 +614,7 @@ const ProductDrawer = ({ id }) => {
 
   const { currency, showingTranslateValue } = useUtilsFunction();
 
-  // Jewellery Pricing Logic
-  const [latestRates, setLatestRates] = React.useState(null);
 
-  // Fetch rates on mount
-  React.useEffect(() => {
-    PricingServices.getRates()
-      .then((res) => {
-        // console.log("PricingServices.getRates response:", res);
-        if (res?.latest) {
-          setLatestRates(res.latest);
-        } else if (res?.data?.latest) {
-          // Handle case where response might be wrapped in data
-          setLatestRates(res.data.latest);
-        } else {
-          console.warn("PricingServices: structure unexpected", res);
-        }
-      })
-      .catch((err) => console.error("Failed to fetch rates", err));
-  }, []);
-
-  // Watch fields for calculation
-  const [
-    metalType,
-    netWeight,
-    metalRate,
-    wastagePercentage,
-    makingChargeType,
-    makingChargeValue,
-    marginPercentage,
-    taxPercentage,
-  ] = watch([
-    "metalType",
-    "netWeight",
-    "metalRate",
-    "wastagePercentage",
-    "makingChargeType",
-    "makingChargeValue",
-    "marginPercentage",
-    "taxPercentage",
-  ]);
-
-  // Handle "Use Latest Rate" click
-  const handleUseLatestRate = (e) => {
-    e.preventDefault();
-    const type = watch("metalType");
-    if (!type || !latestRates) return notifyError("Select a metal type first or no rates available.");
-
-    let rate = 0;
-    const lowerType = type.toLowerCase();
-
-    // console.log("Fetching rate for:", lowerType, "Available rates:", latestRates);
-
-    if (lowerType === "gold") rate = latestRates.gold;
-    else if (lowerType === "silver") rate = latestRates.silver;
-    else if (lowerType === "brass") rate = latestRates.brass;
-
-    if (rate) {
-      setValue("metalRate", rate);
-      notifySuccess(`Updated rate for ${type}: ${rate}`);
-    } else {
-      notifyError(`No rate found for ${type}`);
-    }
-  };
-
-  // Calculation Effect
-  React.useEffect(() => {
-    // Only calculate if we have basic required values
-    if (!netWeight || !metalRate) return;
-
-    // console.log("Calculating price with:", { netWeight, metalRate, wastagePercentage, makingChargeValue, marginPercentage, taxPercentage });
-
-    const weightVal = parseFloat(netWeight) || 0;
-    const rateVal = parseFloat(metalRate) || 0;
-    const wastageVal = parseFloat(wastagePercentage) || 0;
-    const makingVal = parseFloat(makingChargeValue) || 0;
-    const marginVal = parseFloat(marginPercentage) || 0;
-    const taxVal = parseFloat(taxPercentage) || 0;
-
-    // 1. metal_value = weight * metal_rate
-    const metalValue = weightVal * rateVal;
-
-    // 2. wastage_amount = metal_value * (wastage%/100)
-    const wastageAmount = metalValue * (wastageVal / 100);
-
-    // 3. metal_with_wastage = metal_value + wastage_amount
-    const metalWithWastage = metalValue + wastageAmount;
-
-    // 4. making_charges (flat or percent)
-    let makingChargesAmount = 0;
-    if (makingChargeType === "percentage") {
-      makingChargesAmount = metalWithWastage * (makingVal / 100);
-    } else {
-      makingChargesAmount = makingVal;
-    }
-
-    // 5. pre_tax_price = metal_with_wastage + making_charges
-    const preTaxPrice = metalWithWastage + makingChargesAmount;
-
-    // 6. margin_amount = pre_tax_price * (margin%/100)
-    const marginAmount = preTaxPrice * (marginVal / 100);
-
-    // 7. price_before_tax = pre_tax_price + margin_amount
-    const priceBeforeTax = preTaxPrice + marginAmount;
-
-    // 8. final_price = price_before_tax + tax
-    const taxAmount = priceBeforeTax * (taxVal / 100);
-    const finalPrice = priceBeforeTax + taxAmount;
-
-    // console.log("Calculated Final Price:", finalPrice);
-
-    const finalRounded = Math.round(finalPrice);
-
-    setValue("price", finalRounded);
-    setValue("originalPrice", finalRounded);
-
-  }, [
-    netWeight,
-    metalRate,
-    wastagePercentage,
-    makingChargeType,
-    makingChargeValue,
-    marginPercentage,
-    taxPercentage,
-    setValue,
-  ]);
 
 
   return (
@@ -913,143 +796,7 @@ const ProductDrawer = ({ id }) => {
                 </div>
               </div>
 
-              {/* ======================= JEWELLERY PRICING ENGINE ======================= */}
-              <div className="border border-gray-200 dark:border-gray-700 rounded-md p-4 mb-6 bg-gray-50 dark:bg-gray-900/50">
-                <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-4 block">
-                  💎 Jewellery Pricing Calculator
-                </h4>
 
-                {/* Metal Type & Purity */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <LabelArea label="Metal Type" />
-                    <select
-                      {...register("metalType")}
-                      className="block w-full px-3 py-1 text-sm focus:outline-none leading-5 rounded-md focus:border-gray-200 border-gray-200 dark:border-gray-600 focus:ring focus:ring-[#f15929]/50 border-1 bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700"
-                    >
-                      <option value="">Select Metal</option>
-                      <option value="Gold">Gold</option>
-                      <option value="Silver">Silver</option>
-                      <option value="Brass">Brass</option>
-                    </select>
-                  </div>
-                  <div>
-                    <LabelArea label="Purity (e.g. 22K, 92.5)" />
-                    <InputArea
-                      register={register}
-                      label="Purity"
-                      name="metalPurity"
-                      type="text"
-                      placeholder="e.g. 22K"
-                    />
-                  </div>
-                </div>
-
-                {/* Weight & Rate */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <LabelArea label="Net Weight (grams)" />
-                    <InputArea
-                      register={register}
-                      label="Weight (g)"
-                      name="netWeight"
-                      type="number"
-                      step="0.001"
-                      placeholder="0.000"
-                    />
-                  </div>
-                  <div>
-                    <LabelArea label="Metal Rate (per gram)" />
-                    <div className="flex gap-2">
-                      <div className="flex-grow">
-                        <InputArea
-                          register={register}
-                          label="Rate"
-                          name="metalRate"
-                          type="number"
-                          step="0.01"
-                          placeholder="0.00"
-                        />
-                      </div>
-                      <Button
-                        onClick={handleUseLatestRate}
-                        className="h-10 px-3 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs"
-                        type="button"
-                      >
-                        Fetch Latest
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Wastage & Making Charges */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                  <div>
-                    <LabelArea label="Wastage (%)" />
-                    <InputArea
-                      register={register}
-                      label="Wastage %"
-                      name="wastagePercentage"
-                      type="number"
-                      step="0.01"
-                      placeholder="0"
-                    />
-                  </div>
-
-                  <div>
-                    <LabelArea label="Making Charge Type" />
-                    <select
-                      {...register("makingChargeType")}
-                      className="block w-full px-3 py-1 text-sm focus:outline-none leading-5 rounded-md focus:border-gray-200 border-gray-200 dark:border-gray-600 focus:ring focus:ring-[#f15929]/50 border-1 bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700"
-                    >
-                      <option value="flat">Flat Amount</option>
-                      <option value="percentage">Percentage</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <LabelArea label="Making Charge Value" />
-                    <InputArea
-                      register={register}
-                      label="Value"
-                      name="makingChargeValue"
-                      type="number"
-                      placeholder="0"
-                    />
-                  </div>
-                </div>
-
-                {/* Margin & Tax */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <LabelArea label="Margin (%)" />
-                    <InputArea
-                      register={register}
-                      label="Margin %"
-                      name="marginPercentage"
-                      type="number"
-                      step="0.01"
-                      placeholder="0"
-                    />
-                  </div>
-                  <div>
-                    <LabelArea label="Tax (%)" />
-                    <InputArea
-                      register={register}
-                      label="Tax %"
-                      name="taxPercentage"
-                      type="number"
-                      step="0.01"
-                      placeholder="e.g. 3"
-                    />
-                  </div>
-                </div>
-
-                <div className="mt-2 text-xs text-gray-500 italic">
-                  * Final Price will be automatically calculated and set to Product Price below.
-                </div>
-              </div>
-              {/* ==================================================================== */}
 
               {/* Price */}
               <div className="grid grid-cols-6 gap-3 md:gap-5 xl:gap-6 lg:gap-6 mb-6">

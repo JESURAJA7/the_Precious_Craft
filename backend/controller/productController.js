@@ -502,6 +502,7 @@ const getAllProducts = async (req, res) => {
   const skip = (pages - 1) * limits;
 
   try {
+
     const totalDoc = await Product.countDocuments(queryObject);
 
     const products = await Product.find(queryObject)
@@ -510,6 +511,7 @@ const getAllProducts = async (req, res) => {
       .sort(sortObject)
       .skip(skip)
       .limit(limits);
+
 
     res.send({
       products,
@@ -655,7 +657,17 @@ const getShowingStoreProducts = async (req, res) => {
     const { category, title, slug } = req.query;
 
     if (category) {
-      queryObject.categories = { $in: [category] };
+      const categoryQuery = {
+        $or: [
+          { categories: { $in: [category] } },
+          { category: category },
+        ],
+      };
+      if (queryObject.$and) {
+        queryObject.$and.push(categoryQuery);
+      } else {
+        queryObject.$and = [categoryQuery];
+      }
     }
 
     if (title) {
@@ -663,7 +675,16 @@ const getShowingStoreProducts = async (req, res) => {
         [`title.${lang}`]: { $regex: `${title}`, $options: "i" },
       }));
 
-      queryObject.$or = titleQueries;
+      if (queryObject.$and) {
+        queryObject.$and.push({ $or: titleQueries });
+      } else if (queryObject.$or) {
+        // If $or already exists (e.g., from a previous title filter, though unlikely here),
+        // combine them into an $and with the existing $or.
+        queryObject.$and = [{ $or: queryObject.$or }, { $or: titleQueries }];
+        delete queryObject.$or; // Remove the old top-level $or
+      } else {
+        queryObject.$or = titleQueries;
+      }
     }
 
     if (slug) {

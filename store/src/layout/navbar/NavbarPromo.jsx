@@ -34,6 +34,16 @@ const NavbarPromo = ({ languages, categories, categoryError }) => {
   const { showingTranslateValue } = useUtilsFunction();
   const navbar = storeCustomization?.navbar;
 
+  const findCategory = (term) =>
+    categories?.find(c =>
+      c.name?.en?.toLowerCase().includes(term) ||
+      c.slug?.toLowerCase().includes(term)
+    );
+
+  const womenCategory = findCategory("women");
+  const menCategory = findCategory("men");
+  const kidsCategory = findCategory("kids");
+
   return (
     <>
       <div className="hidden lg:block xl:block bg-purple-100 border-b">
@@ -43,68 +53,43 @@ const NavbarPromo = ({ languages, categories, categoryError }) => {
               <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center md:justify-start md:space-x-10">
                   <Popover as="nav" className="md:flex space-x-10 items-center">
-                    {/* {navbar?.categories_menu_status && (
-                      <Popover className="relative ">
-                        <PopoverButton className="group inline-flex items-center py-2 hover:text-purple-600 focus:outline-none">
-                          <span className=" text-sm font-medium">
-                            {showingTranslateValue(navbar?.categories)}
-                          </span>
-
-                          <ChevronDownIcon
-                            className="ml-1 h-3 w-3 group-hover:text-purple-600"
-                            aria-hidden="true"
-                          />
-                        </PopoverButton>
-
-                        
-                        <Transition
-                          as={Fragment}
-                          enter="transition ease-out duration-200"
-                          enterFrom="opacity-0 translate-y-1"
-                          enterTo="opacity-100 translate-y-0"
-                          leave="transition ease-in duration-150"
-                          leaveFrom="opacity-100 translate-y-0"
-                          leaveTo="opacity-0 translate-y-1"
-                        >
-                          <PopoverPanel className="absolute z-10 -ml-1 mt-1 transform w-screen max-w-xs c-h-65vh bg-white">
-                            <div className="rounded-md shadow-lg  overflow-y-scroll flex-grow scrollbar-hide w-full h-full">
-                              <Category
-                                categories={categories}
-                                categoryError={categoryError}
-                              />
-                            </div>
-                          </PopoverPanel>
-                        </Transition>
-                      </Popover>
-                    )} */}
                     <Link
+                      onClick={() => setIsLoading(!isLoading)}
+                      href="/"
+                      className="mx-4 py-2 text-sm font-medium hover:text-purple-600"
+                    >
+                      Home
+                    </Link>
+
+                    {womenCategory && (
+                      <Link
                         onClick={() => setIsLoading(!isLoading)}
-                        href="/"
+                        href={`/search?category=${womenCategory.name.en?.toLowerCase()}&_id=${womenCategory._id}`}
                         className="mx-4 py-2 text-sm font-medium hover:text-purple-600"
                       >
-                        Home
+                        Womens
                       </Link>
-                    <Link
+                    )}
+
+                    {menCategory && (
+                      <Link
                         onClick={() => setIsLoading(!isLoading)}
-                        href="/search?category=gold-jewellery&_id=6901ca8e841765d2d7985f4d"
+                        href={`/search?category=${menCategory.name.en?.toLowerCase()}&_id=${menCategory._id}`}
                         className="mx-4 py-2 text-sm font-medium hover:text-purple-600"
                       >
-                        Gold
+                        Mens
                       </Link>
-                     <Link
+                    )}
+
+                    {kidsCategory && (
+                      <Link
                         onClick={() => setIsLoading(!isLoading)}
-                        href="/search?category=silver-jewellery&_id=6901ca14841765d2d7985f08"
+                        href={`/search?category=${kidsCategory.name.en?.toLowerCase()}&_id=${kidsCategory._id}`}
                         className="mx-4 py-2 text-sm font-medium hover:text-purple-600"
                       >
-                        Silver
+                        Kids
                       </Link>
-                       <Link
-                        onClick={() => setIsLoading(!isLoading)}
-                        href="/search?category=brass-jewellery&_id=6901a6164976d20d78f6c17f"
-                        className="mx-4 py-2 text-sm font-medium hover:text-purple-600"
-                      >
-                        Brass
-                      </Link>
+                    )}
                     {navbar?.about_menu_status && (
                       <Link
                         href="/about-us"
@@ -124,7 +109,7 @@ const NavbarPromo = ({ languages, categories, categoryError }) => {
                         {showingTranslateValue(navbar?.contact_us)}
                       </Link>
                     )}
-{/*                     
+                    {/*                     
                     <Popover className="relative">
                       <PopoverButton className="group inline-flex items-center py-2 text-sm font-medium hover:text-purple-600 focus:outline-none">
                         <span>{showingTranslateValue(navbar?.pages)}</span>

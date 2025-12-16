@@ -93,7 +93,7 @@ const productSchema = new mongoose.Schema(
     metal: {
       type: String,
       enum: ["gold", "silver", "brass"],
-      required: true, // set true for new products
+      required: false,
     },
 
   },

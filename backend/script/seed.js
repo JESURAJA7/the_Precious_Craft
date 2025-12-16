@@ -54,20 +54,21 @@ const importData = async () => {
     await Admin.insertMany(adminData);
 
     await Category.deleteMany();
-    await Category.insertMany(categoryData);
+    const insertedCats = await Category.insertMany(categoryData);
+    console.log(`Inserted ${insertedCats.length} categories.`);
 
     await Product.deleteMany();
     // await Product.insertMany(productData);
-    await Product.insertMany(productsWithReviews);
+    // await Product.insertMany(productsWithReviews);
 
     await Review.deleteMany();
-    await Review.insertMany(reviewsData);
+    // await Review.insertMany(reviewsData);
 
     await Coupon.deleteMany();
     await Coupon.insertMany(couponData);
 
     await Order.deleteMany();
-    await Order.insertMany(orderData);
+    // await Order.insertMany(orderData);
 
     await Setting.deleteMany();
     await Setting.insertMany(settingData);

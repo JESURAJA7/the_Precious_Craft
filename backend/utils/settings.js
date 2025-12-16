@@ -10,7 +10,7 @@ const setting = [
       contact: "019579034",
       email: "kachabazar@gmail.com",
       website: "kachabazar-admin.vercel.app",
-      default_currency: "€",
+      default_currency: "₹",
       default_time_zone: "Europe/London",
       default_date_format: "MMM D, YYYY",
       receipt_size: "57-mm",
@@ -749,8 +749,8 @@ const setting = [
         bottom_contact_status: true,
         social_links_status: true,
         shipping_card: {
-          en: "Free Shipping From €500.00",
-          de: "Kostenloser Versand ab 500,00 €",
+          en: "Free Shipping From ₹500.00",
+          de: "Kostenloser Versand ab 500,00 ₹",
         },
         support_card: {
           en: "Support 24/7  At Anytime",

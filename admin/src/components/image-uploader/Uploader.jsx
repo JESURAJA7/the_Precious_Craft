@@ -32,7 +32,7 @@ const Uploader = ({
     },
     multiple: product ? true : false,
     maxSize: 5242880, // 5 MB in bytes
-    maxFiles: globalSetting?.number_of_image_per_product || 2,
+    maxFiles: globalSetting?.number_of_image_per_product || 10,
     onDrop: async (acceptedFiles) => {
       const resizedFiles = await Promise.all(
         acceptedFiles.map((file) =>
@@ -84,8 +84,8 @@ const Uploader = ({
               <li key={e.code}>
                 {e.code === "too-many-files"
                   ? notifyError(
-                      `Maximum ${globalSetting?.number_of_image_per_product} Image Can be Upload!`
-                    )
+                    `Maximum ${(globalSetting?.number_of_image_per_product || 10)} Image Can be Upload!`
+                  )
                   : notifyError(e.message)}
               </li>
             ))}
@@ -99,18 +99,22 @@ const Uploader = ({
         if (
           product &&
           imageUrl?.length + files?.length >
-            globalSetting?.number_of_image_per_product
+          (globalSetting?.number_of_image_per_product || 10)
         ) {
           return notifyError(
-            `Maximum ${globalSetting?.number_of_image_per_product} Image Can be Upload!`
+            `Maximum ${(globalSetting?.number_of_image_per_product || 10)
+            } Image Can be Upload!`
           );
         }
 
         setLoading(true);
         setError("Uploading....");
 
-        const name = file.name.replaceAll(/\s/g, "");
-        const public_id = name?.substring(0, name.lastIndexOf("."));
+        const name = file.name.substring(0, file.name.lastIndexOf("."));
+        const sanitizedName = name.replace(/[^a-zA-Z0-9\-_]/g, "_");
+        const public_id = sanitizedName + "_" + Date.now();
+
+        console.log("DEBUG: Generated public_id for upload:", public_id);
 
         const formData = new FormData();
         formData.append("file", file);
@@ -131,6 +135,7 @@ const Uploader = ({
           data: formData,
         })
           .then((res) => {
+            console.log("DEBUG: Upload Success Response:", res);
             notifySuccess("Image Uploaded successfully!");
             setLoading(false);
             if (product) {
@@ -140,8 +145,9 @@ const Uploader = ({
             }
           })
           .catch((err) => {
-            console.error("err", err);
-            notifyError(err.Message);
+            console.error("DEBUG: Upload Error:", err);
+            console.error("DEBUG: Cloudinary Error Details:", err.response?.data);
+            notifyError(err.response?.data?.error?.message || err.message);
             setLoading(false);
           });
       });

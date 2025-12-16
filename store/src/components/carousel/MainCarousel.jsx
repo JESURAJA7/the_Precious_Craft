@@ -16,9 +16,15 @@ const MainCarousel = async () => {
   const slider = storeCustomizationSetting?.slider;
 
   const bannerSliderImages = globalSetting?.banner_slider;
+  const coverImage = globalSetting?.banner_cover || globalSetting?.banner;
+
+  // console.log("DEBUG: MainCarousel bannerSliderImages:", bannerSliderImages);
+  // console.log("DEBUG: MainCarousel old slider settings:", slider);
 
   // If we have banner slider images from the new uploader, use them
   let sliderData = [];
+
+  console.log("DEBUG: MainCarousel sliderData:", bannerSliderImages);
 
   if (bannerSliderImages && bannerSliderImages.length > 0) {
     sliderData = bannerSliderImages.map((img, index) => ({
@@ -29,6 +35,18 @@ const MainCarousel = async () => {
       url: "#",
       image: img,
     }));
+  } else if (coverImage) {
+    // If we have a single cover image, use it as a single slide
+    sliderData = [
+      {
+        id: 1,
+        title: "",
+        info: "",
+        buttonName: "",
+        url: "#",
+        image: coverImage,
+      }
+    ];
   } else {
     // Fallback to the old customization setting
     sliderData = [
@@ -38,7 +56,7 @@ const MainCarousel = async () => {
         info: showingTranslateValue(slider?.first_description),
         buttonName: showingTranslateValue(slider?.first_button),
         url: showingUrl(slider?.first_link),
-        image: showingImage(slider?.first_img) || "/slider/slider-1.jpg",
+        image: showingImage(slider?.first_img),
       },
       {
         id: 2,
@@ -46,7 +64,7 @@ const MainCarousel = async () => {
         info: showingTranslateValue(slider?.second_description),
         buttonName: showingTranslateValue(slider?.second_button),
         url: showingUrl(slider?.second_link),
-        image: showingImage(slider?.second_img) || "/slider/slider-2.jpg",
+        image: showingImage(slider?.second_img),
       },
       {
         id: 3,
@@ -54,7 +72,7 @@ const MainCarousel = async () => {
         info: showingTranslateValue(slider?.third_description),
         buttonName: showingTranslateValue(slider?.third_button),
         url: showingUrl(slider?.third_link),
-        image: showingImage(slider?.third_img) || "/slider/slider-3.jpg",
+        image: showingImage(slider?.third_img),
       },
       {
         id: 4,
@@ -62,7 +80,7 @@ const MainCarousel = async () => {
         info: showingTranslateValue(slider?.four_description),
         buttonName: showingTranslateValue(slider?.four_button),
         url: showingUrl(slider?.four_link),
-        image: showingImage(slider?.four_img) || "/slider/slider-1.jpg",
+        image: showingImage(slider?.four_img),
       },
       {
         id: 5,
@@ -70,9 +88,12 @@ const MainCarousel = async () => {
         info: showingTranslateValue(slider?.five_description),
         buttonName: showingTranslateValue(slider?.five_button),
         url: showingUrl(slider?.five_link),
-        image: showingImage(slider?.five_img) || "/slider/slider-2.jpg",
+        image: showingImage(slider?.five_img),
       },
     ];
+
+    // Filter out slides with no image
+    sliderData = sliderData.filter((item) => item.image);
   }
 
   return (

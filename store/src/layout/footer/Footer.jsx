@@ -254,24 +254,15 @@ const Footer = async ({ error, storeCustomizationSetting }) => {
           )}
           {footer?.block4_status && (
             <div className="pb-3.5 sm:pb-0 col-span-1 md:col-span-2 lg:col-span-3">
-              <Link
-                href="/"
-                className="mr-3 lg:mr-12 xl:mr-12"
-                rel="noreferrer"
-              >
-                <div className="relative w-32 h-10">
-                  <Image
-                    // width={110}
-                    // height={40}
-                    
-                    width="0"
-                    height="0"
-                    sizes="100vw"
-                    className="w-full h-auto"
-                    src={footer?.block4_logo || "/logo/logo-color.svg"}
-                    alt="logo"
-                  />
-                </div>
+              <Link href="/" className="flex flex-shrink-0 items-center">
+                <img
+                  className="h-12 w-auto animate-[spin_6s_linear_infinite]"
+                  src="/logo/Precious.svg"
+                  alt="Precious"
+                />
+                <span className="text-[24px] italic font-bold text-purple-900 whitespace-nowrap ml-2">
+                  Precious Craft
+                </span>
               </Link>
               <br></br>
               <br></br>
@@ -305,10 +296,10 @@ const Footer = async ({ error, storeCustomizationSetting }) => {
                     footer?.social_pinterest ||
                     footer?.social_linkedin ||
                     footer?.social_whatsapp) && (
-                    <span className="text-base leading-7 font-medium block mb-2 pb-0.5">
-                      Follow Us
-                    </span>
-                  )}
+                      <span className="text-base leading-7 font-medium block mb-2 pb-0.5">
+                        Follow Us
+                      </span>
+                    )}
                   <ul className="text-sm flex">
                     {footer?.social_facebook && (
                       <li className="flex items-center mr-3 transition ease-in-out duration-500">
